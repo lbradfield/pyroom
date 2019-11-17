@@ -5,7 +5,6 @@
 ############################
 import sys
 import logging
-import sympy
 
 
 ############################
@@ -13,7 +12,7 @@ import sympy
 ############################
 # Logging
 LOG_LEVEL = logging.DEBUG
-LOG_NAME = "room"
+LOG_NAME = "door"
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
 ############################
@@ -34,24 +33,15 @@ logger.addHandler(console_handler)
 ############################
 # Object
 ############################
-class Room:
+class Door:
 
     def __init__(self):
         logger.debug("Func() : " + sys._getframe().f_code.co_name)
-        self.origin = (0,0)
 
-    def get_size(self):
-        return self.width, self.depth
+    def get_length(self):
+        return self.length
 
-    def get_name(self):
-        return self.name
-
-    def set_name(self, name):
+    def set_length(self, length):
         logger.debug("Func() : " + sys._getframe().f_code.co_name)
-        self.name = name
-
-    def set_size(self, width, depth):
-        logger.debug("Func() : " + sys._getframe().f_code.co_name)
-        self.width = width
-        self.depth = depth
+        self.length = length
 
