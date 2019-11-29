@@ -5,7 +5,9 @@
 ############################
 import sys
 import logging
-import sympy
+#import sympy
+
+import test
 
 ############################
 # Constants
@@ -54,3 +56,6 @@ class Room:
         self.width = width
         self.depth = depth
 
+
+
+print(test.test_func())
