@@ -7,7 +7,6 @@ import sys
 import logging
 import sympy
 
-
 ############################
 # Constants
 ############################
