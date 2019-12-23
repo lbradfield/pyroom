@@ -17,7 +17,7 @@ import test
 ############################
 # Logging
 LOG_LEVEL = logging.DEBUG
-LOG_NAME = "room"
+LOG_NAME = __main__
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
 ############################
