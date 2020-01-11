@@ -31,12 +31,12 @@ class Room(Polygon):
     properties from the polygon object.
     '''
 
-    units = "sq. ft"
+    # Get units from config
+    units = UNITS
 
     def __init__(self, name, points):
         logger.debug("Func() : " + sys._getframe().f_code.co_name)
         self.name = name
-        self.units = self.units
         Polygon.__init__(points)
 
     def __str__(self):
@@ -45,9 +45,4 @@ class Room(Polygon):
     def get_name(self):
         return self.name
 
-
-if __name__ == "__main__":
-
-    room = Room("Kitchen", points)
-    logger.info(room)
 
