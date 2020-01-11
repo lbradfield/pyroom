@@ -1,2 +1,4 @@
 # gitignore
 pyroom/__pycache__
+pyroom/*.pyc
+tests/*.pyc
