@@ -1,4 +1,9 @@
 # gitignore
+./__pycache__
 pyroom/__pycache__
+pyroom/tests/__pycache__
+pyroom/common/__pycache__
+./*.pyc
 pyroom/*.pyc
-tests/*.pyc
+pyroom/tests/*.pyc
+pyroom/common/*.pyc
