@@ -39,3 +39,9 @@ class Furniture(Polygon):
 
     def __str__(self):
         return "{} - {} {}".format(self.name, self.area, self.units)
+
+    def set_wallside(self, seg):
+        '''
+        Designates a particular segment to be wall-facing.
+        '''
+        self.wallside = seg
