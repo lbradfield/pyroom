@@ -31,9 +31,17 @@ class Polygon:
         Construct with an ordered list of 2-element tuples of
         integers, which represent points, from which to draw the
         vertices of the polygon.
+
+        Parameters
+        ----------
+        points : list
+            An ordered list of 2-element tuples of integers
+            representing points in the polygon, not including the
+            origin (0, 0).
         '''
         logger.debug("Func() : " + sys._getframe().f_code.co_name)
-        self.vertices = points
+        self.origin = (0, 0)
+        self.vertices = self.origin.extend(points)
         self.num_vertices = len(points)
 
         # Calculate the area
@@ -54,6 +62,12 @@ class Polygon:
     def get_length(self, p1, p2):
         return ((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2) ** 0.5
 
+    def get_length(self, seg):
+        pass
+
+    def get_area(self):
+        return self.area
+
     def calc_area(self):
         '''
         Calculate the area using the Shoelace Formula.
@@ -65,13 +79,24 @@ class Polygon:
             area -= self.vertices[j][0] * self.vertices[i][1]
         self.area = abs(area) * 0.5
 
+    def rotate(self, deg):
+        '''
+        Rotate the polygon about the origin.
+        '''
+
     def set_segments(self, points):
         '''
         Incomplete and not needed at this time.
         Input segments as an ordered list of points, and output a
         list of lists of tuples, clumping together vertices that are
         adjacent.
-        Ex:
+
+        Parameters
+        ----------
+        points : 
+
+        Examples
+        --------
             [(0, 1), (0, 4), (
         '''
         pass
