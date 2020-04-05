@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#/usr/bin/env python3
 
 ############################
 # Imports
@@ -38,11 +38,26 @@ class Room(Polygon):
         logger.debug("Func() : " + sys._getframe().f_code.co_name)
         self.name = name
         Polygon.__init__(points)
+        self.furniture = []
 
     def __str__(self):
         return "{} - {} {}".format(self.name, self.area, self.units)
 
     def get_name(self):
         return self.name
+
+    def get_furniture(self):
+        return self.furniture
+
+    def add_furniture(self, furn, pos=self.origin):
+        '''
+        Place a furniture object in the room at a position.
+
+        Parameters
+        ----------
+        furn : object
+        '''
+        self.furniture.append((furn, pos))
+
 
 
