@@ -3,23 +3,9 @@
 ############################
 # Imports
 ############################
+# Standard imports
+import sys
 from config import *
-
-############################
-# Set up logging
-############################
-LOG_NAME = __name__
-# Create the formatter
-formatter = logging.Formatter(LOG_FORMAT)
-# Create the logger
-logger = logging.getLogger(LOG_NAME)
-logger.setLevel(LOG_LEVEL)
-# Create the console handler
-console_handler = logging.StreamHandler()
-console_handler.setLevel(LOG_LEVEL)
-console_handler.setFormatter(formatter)
-# Add handlers to the logger
-logger.addHandler(console_handler)
 
 ############################
 # Object
@@ -39,13 +25,10 @@ class Polygon:
             representing points in the polygon, not including the
             origin (0, 0).
         '''
-        logger.debug("Func() : " + sys._getframe().f_code.co_name)
-        self.origin = (0, 0)
-        self.vertices = self.origin.extend(points)
+        from sys import path
+        self.vertices = [(0, 0)]
+        self.vertices.extend(points)
         self.num_vertices = len(points)
-
-        # Calculate the area
-        self.calc_area()
 
         # Create list of segments
         #self.set_segments(points)
@@ -73,7 +56,7 @@ class Polygon:
         Calculate the area using the Shoelace Formula.
         '''
         area = 0.0
-        for i in self.num_vertices:
+        for i in range(self.num_vertices):
             j = (i + 1) % self.num_vertices
             area += self.vertices[i][0] * self.vertices[j][1]
             area -= self.vertices[j][0] * self.vertices[i][1]
@@ -105,7 +88,6 @@ class Polygon:
         '''
         Incomplete and not required at this time
         '''
-        logger.debug("Func() : " + sys._getframe().f_code.co_name)
         point = euclid.Point2(x, y)
         if point not in self.points:
             self.points.append(point)
