@@ -4,12 +4,17 @@
 import logging
 
 ############################
+# room config
+############################
+UNITS = 'ft'
+
+############################
 # Logging setup
 ############################
 LOG_LEVEL = logging.DEBUG
 LOG_FORMAT = \
-    "%(asctime)s|%(module)s|%(funcName)s|%(levelname)s|%(message)s"
-LOG_NAME = "pyroom"
+    '%(asctime)s|%(module)s|%(funcName)s|%(levelname)s|%(message)s'
+LOG_NAME = 'pyroom'
 # Create the formatter
 formatter = logging.Formatter(LOG_FORMAT)
 # Create the console handler
