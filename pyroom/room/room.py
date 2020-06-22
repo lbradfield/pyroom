@@ -132,7 +132,7 @@ class Room(Polygon):
     def get_furniture(self):
         return self.furniture
 
-    def add_furniture(self, furn, pos=self.origin):
+    def add_furniture(self, furn, pos=None):
         '''
         Place a furniture object in the room at a position.
 
@@ -140,6 +140,8 @@ class Room(Polygon):
         ----------
         furn : object
         '''
-        self.furniture.append((furn, pos))
-
+        if pos is not None:
+            self.furniture.append((furn, pos))
+        else:
+            self.furniture.append((furn, self.origin))
 
