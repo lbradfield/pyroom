@@ -54,6 +54,7 @@ class Polygon:
         Rotate the polygon about the origin.
         '''
 
+
     def get_vertices(self):
         return self.vertices
 
@@ -69,7 +70,7 @@ class Polygon:
 
         Parameters
         ----------
-        points : 
+        points :
 
         Examples
         --------
