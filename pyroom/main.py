@@ -29,5 +29,5 @@ view_sys_path()
 '''
 
 # import pyroom package
-from pyroom.room.room import Room
+from pyroom.room import Room
 

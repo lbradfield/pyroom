@@ -1,5 +1,8 @@
+# standard imports
 import unittest
-from polygon import Polygon
+
+# this package
+from pyroom.room import *
 
 # Simple test case
 # Simple 2x3 rectangle. A = 6
@@ -43,7 +46,7 @@ class PolygonTestCase(unittest.TestCase):
         self.assertEqual(self.polygon1.area, 6.0)
         self.assertEqual(self.polygon2.area, 11.35)
 
-class PolygonTestCase(unittest.TestCase):
+class RoomTestCase(unittest.TestCase):
     pass
 
 
