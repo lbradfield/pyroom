@@ -1,9 +1,10 @@
 # gitignore
 ./__pycache__
 pyroom/__pycache__
-pyroom/room/__pycache__
 pyroom/tests/__pycache__
 ./*.pyc
 pyroom/*.pyc
-pyroom/room/*.pyc
 pyroom/tests/*.pyc
+./*.swp
+pyroom/*.swp
+pyroom/tests/*.swp
