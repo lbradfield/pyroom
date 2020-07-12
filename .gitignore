@@ -1,10 +1,10 @@
 # gitignore
 ./__pycache__
-pyroom/__pycache__
-pyroom/tests/__pycache__
+spacious/__pycache__
+spacious/tests/__pycache__
 ./*.pyc
-pyroom/*.pyc
-pyroom/tests/*.pyc
+spacious/*.pyc
+spacious/tests/*.pyc
 ./*.swp
-pyroom/*.swp
-pyroom/tests/*.swp
+spacious/*.swp
+spacious/tests/*.swp
