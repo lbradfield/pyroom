@@ -1,12 +1,13 @@
 #/usr/bin/env python3
 
 ############################
-# Imports
+# imports
 ############################
-# Standard imports
+# standard imports
 import sys
-from config import *
 
+# local imports
+from .config import *
 
 class Polygon:
 
@@ -27,7 +28,7 @@ class Polygon:
         self.vertices.extend(points)
         self.num_vertices = len(self.vertices)
 
-        # Create list of segments
+        # create list of segments
         #self.set_segments(points)
 
     def __str__(self):
@@ -42,18 +43,52 @@ class Polygon:
         '''
         area = 0.0
         for i in range(self.num_vertices):
+            # wrap around to first point at end of list
             j = (i + 1) % self.num_vertices
             area += self.vertices[i][0] * self.vertices[j][1]
             area -= self.vertices[j][0] * self.vertices[i][1]
         self.area = abs(area) * 0.5
 
-    # Unused functions below
-    # ----------------------
-    def rotate(self, deg):
+    def calc_centroid(self):
+        '''
+        Calculate the centroid or geometric center.
+        '''
+        c_x = 0.0
+        c_y = 0.0
+        # get the X coordinate
+        for i in range(self.num_vertices):
+            # wrap around to first point at end of list
+            j = (i + 1) % self.num_vertices
+            c_x += (self.vertices[i][0] ** 2) * self.vertices[j][1]
+            c_x -= self.vertices[i][0] * self.vertices[j][0] * \
+                    self.vertices[i][1]
+            c_x += self.vertices[i][0] * self.vertices[j][0] * \
+                    self.vertices[j][1]
+            c_x -= (self.vertices[j][0] ** 2) * self.vertices[i][1]
+        c_x *= 1 / (6 * self.area)
+        # get the Y coordinate
+        for i in range(self.num_vertices):
+            # wrap around to first point at end of list
+            j = (i + 1) % self.num_vertices
+            c_y += self.vertices[i][0] * self.vertices[i][1] * \
+                    self.vertices[j][1]
+            c_y -= self.vertices[j][0] * (self.vertices[i][1] ** 2)
+            c_y += self.vertices[i][0] * (self.vertices[j][1] ** 2)
+            c_y -= self.vertices[j][0] * self.vertices[i][1] * \
+                    self.vertices[j][1]
+        c_y *= 1 / (6 * self.area)
+        self.centroid = (c_x, c_y)
+
+    def rotate(self, rad):
         '''
         Rotate the polygon about the origin.
         '''
+        for point in self.points:
+            pass
 
+
+    # unused functions below
+    # ----------------------
 
     def get_vertices(self):
         return self.vertices
@@ -92,7 +127,7 @@ class Furniture(Polygon):
     Furniture object that interacts with room object.
     '''
 
-    # Get units from config
+    # get units from config
     units = UNITS
 
     def __init__(self, name, points):
@@ -115,7 +150,7 @@ class Room(Polygon):
     properties from the polygon object.
     '''
 
-    # Get units from config
+    # get units from config
     units = UNITS
 
     def __init__(self, name, points):
