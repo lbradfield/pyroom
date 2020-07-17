@@ -28,6 +28,10 @@ class Polygon:
         self.vertices.extend(points)
         self.num_vertices = len(self.vertices)
 
+        # get area and centroid
+        self.calc_area()
+        self.calc_centroid()
+
         # create list of segments
         #self.set_segments(points)
 
