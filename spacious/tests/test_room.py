@@ -2,9 +2,12 @@
 
 # area calculation can be verified here:
 # https://rechneronline.de/pi/simple-polygon.php
+# centroid calculation can be verified here:
+# http://eguruchela.com/math/Calculator/polygon-centroid-point
 
 # standard imports
 import unittest
+import math
 
 # this package
 from spacious.room import Polygon
@@ -14,7 +17,7 @@ from spacious.room import Polygon
 points1 = [(2, 0),
           (2, 3),
           (0, 3),
-          ]
+]
 # area
 A1 = 6.0
 # centroid
@@ -26,7 +29,7 @@ points2 = [(1, 3),
           (-2, 2),
           (0, -1.4),
           (8.5, 2)
-          ]
+]
 # area
 A2 = 11.35
 # centroid
@@ -40,11 +43,28 @@ points3 = [(5, 0),
           (2, -12),
           (-1.8, -5),
           (-6, -5)
-          ]
+]
 # area
 A3 = 56.3
 # centroid
-C3 = (0.777, -4.343)
+C3 = (-0.7771462403789224, 4.343398460627591)
+
+# rotate angles in radians
+ROTATE_ANGLES = [
+    0.0 * math.pi,
+    0.5 * math.pi,
+    -1.7 * math.pi,
+    3.5 * math.pi,
+]
+P1_ROTATED = [
+    [(0, 0), (2, 0), (2, 3), (0, 3)],
+    [(0, 0), (2, 0), (2, 3), (0, 3)],
+    [(0, 0), (2, 0), (2, 3), (0, 3)],
+]
+P2_ROTATED = [
+]
+P3_ROTATED = [
+]
 
 class PolygonTestCase(unittest.TestCase):
     def setUp(self):
@@ -92,7 +112,17 @@ class PolygonTestCase(unittest.TestCase):
         self.assertEqual(self.polygon3.centroid, C3)
 
     def test_rotate(self):
-        pass
+        for angle in ANGLES:
+            with self.subTest(i=i):
+                self.polygon1.rotate(i)
+                self.polygon2.rotate(i)
+                self.polygon3.rotate(i)
+                self.assertEqual(self.polygon1.vertices,
+                                 P1_ROTATED[i])
+                self.assertEqual(self.polygon2.vertices,
+                                 P2_ROTATED[i])
+                self.assertEqual(self.polygon3.vertices,
+                                 P3_ROTATED[i])
 
 class RoomTestCase(unittest.TestCase):
     pass
