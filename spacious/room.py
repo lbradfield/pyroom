@@ -5,6 +5,7 @@
 ############################
 # standard imports
 import sys
+from math import sin, cos
 
 # local imports
 from .config import *
@@ -83,13 +84,23 @@ class Polygon:
         c_y *= 1 / (6 * self.area)
         self.centroid = (c_x, c_y)
 
-    def rotate(self, rad):
+    def rotate(self, angle):
         '''
-        Rotate the polygon about the origin.
+        Rotate the polygon about the origin by given angle in
+        radians using RH rule.
         '''
-        for point in self.points:
-            pass
-
+        rotated_vertices = []
+        for point in self.vertices:
+            # translate vector to origin
+            x = point[0] - self.centroid[0]
+            y = point[1] - self.centroid[1]
+            new_x = x * cos(angle) - y * sin(angle)
+            new_y = x * sin(angle) + y * cos(angle)
+            # translate vector back to centroid
+            rot_x = new_x + self.centroid[0]
+            rot_y = new_y + self.centroid[1]
+            rotated_vertices.append((rot_x, rot_y))
+        self.vertices = rotated_vertices
 
     # unused functions below
     # ----------------------
