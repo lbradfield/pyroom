@@ -1,5 +1,8 @@
 #/usr/bin/env python3
 
+# reference on floating-point errors:
+# https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/#:~:text=The%20idea%20of%20a%20relative,larger%20of%20the%20two%20numbers.
+
 # area calculation can be verified here:
 # https://rechneronline.de/pi/simple-polygon.php
 # centroid calculation can be verified here:

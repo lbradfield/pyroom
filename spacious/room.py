@@ -6,9 +6,23 @@
 # standard imports
 import sys
 from math import sin, cos
+import numpy as np
 
 # local imports
 from .config import *
+
+def rotate(point, angle, origin=(0, 0)):
+    '''
+    Rotate a point about another point by given angle in
+    radians using the RH rule.
+    '''
+    # translate vector to origin
+    x = point[0] - origin[0]
+    y = point[1] - origin[1]
+    # multiply by the rotation matrix, then add the offset back in
+    new_x = (x * cos(angle) - y * sin(angle)) + origin[0]
+    new_y = (x * sin(angle) + y * cos(angle)) + origin[1]
+    return new_x, new_y
 
 class Polygon:
 
@@ -70,7 +84,7 @@ class Polygon:
             c_x += self.vertices[i][0] * self.vertices[j][0] * \
                     self.vertices[j][1]
             c_x -= (self.vertices[j][0] ** 2) * self.vertices[i][1]
-        c_x *= 1 / (6 * self.area)
+        c_x *= round(1 / (6 * self.area), 6)
         # get the Y coordinate
         for i in range(self.num_vertices):
             # wrap around to first point at end of list
@@ -101,6 +115,14 @@ class Polygon:
             rot_y = new_y + self.centroid[1]
             rotated_vertices.append((rot_x, rot_y))
         self.vertices = rotated_vertices
+
+    def rotate_np(self, angle):
+        '''
+        Rotate the polygon about the origin by given angle in
+        radians using RH rule.
+        '''
+        s, c = (np.sin(angle), np.cos(angle))
+        r_matrix = np.array([[c, -s], [c, s]])
 
     # unused functions below
     # ----------------------
