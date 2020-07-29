@@ -163,18 +163,12 @@ class PolygonTestCase(unittest.TestCase):
                          '(-1.8, -5)\n'\
                          '(-6, -5)')
 
-    def test_calc_area(self):
-        self.polygon1.calc_area()
-        self.polygon2.calc_area()
-        self.polygon3.calc_area()
+    def test_set_area(self):
         self.assertEqual(self.polygon1.area, A1)
         self.assertEqual(self.polygon2.area, A2)
         self.assertEqual(self.polygon3.area, A3)
 
-    def test_calc_centroid(self):
-        self.polygon1.calc_centroid()
-        self.polygon2.calc_centroid()
-        self.polygon3.calc_centroid()
+    def test_set_centroid(self):
         self.assertEqual(self.polygon1.centroid, C1)
         self.assertEqual(self.polygon2.centroid, C2)
         self.assertEqual(self.polygon3.centroid, C3)

@@ -11,10 +11,55 @@ import numpy as np
 # local imports
 from .config import *
 
-def rotate(point, angle, origin=(0, 0)):
+def calc_area(vertices):
     '''
-    Rotate a point about another point by given angle in
-    radians using the RH rule.
+    Calculate the area of a polygon using the Shoelace Formula
+    given the vertices.
+    '''
+    area = 0.0
+    num_vertices = len(vertices)
+    for i in range(num_vertices):
+        # wrap around to first point at end of list
+        j = (i + 1) % num_vertices
+        area += vertices[i][0] * vertices[j][1]
+        area -= vertices[j][0] * vertices[i][1]
+    return abs(area) * 0.5
+
+def calc_centroid(vertices, area):
+    '''
+    Calculate the centroid of a polygon given the vertices and area.
+    '''
+    c_x = 0.0
+    c_y = 0.0
+    num_vertices = len(vertices)
+    # get the X coordinate
+    for i in range(num_vertices):
+        # wrap around to first point at end of list
+        j = (i + 1) % num_vertices
+        c_x += (vertices[i][0] ** 2) * vertices[j][1]
+        c_x -= vertices[i][0] * vertices[j][0] * \
+                vertices[i][1]
+        c_x += vertices[i][0] * vertices[j][0] * \
+                vertices[j][1]
+        c_x -= (vertices[j][0] ** 2) * vertices[i][1]
+    c_x *= 1 / (6 * area)
+    # get the Y coordinate
+    for i in range(num_vertices):
+        # wrap around to first point at end of list
+        j = (i + 1) % num_vertices
+        c_y += vertices[i][0] * vertices[i][1] * \
+                vertices[j][1]
+        c_y -= vertices[j][0] * (vertices[i][1] ** 2)
+        c_y += vertices[i][0] * (vertices[j][1] ** 2)
+        c_y -= vertices[j][0] * vertices[i][1] * \
+                vertices[j][1]
+    c_y *= 1 / (6 * area)
+    return c_x, c_y
+
+def rotate_point(point, angle, origin=(0, 0)):
+    '''
+    Rotate a point about any origin by given angle in radians using
+    the RH rule.
     '''
     # translate vector to origin
     x = point[0] - origin[0]
@@ -25,6 +70,11 @@ def rotate(point, angle, origin=(0, 0)):
     return new_x, new_y
 
 class Polygon:
+
+    # precision of floats
+    # this is used to convert all floats into ints before
+    # calculations take place
+    p = 1000000
 
     def __init__(self, points):
         '''
@@ -42,13 +92,13 @@ class Polygon:
         self.vertices = [(0, 0)]
         self.vertices.extend(points)
         self.num_vertices = len(self.vertices)
+        self.int_vertices = []
+        for v_x, v_y in self.vertices:
+            self.int_vertices.append(
+                (v_x * Polygon.p, v_y * Polygon.p))
 
-        # get area and centroid
-        self.calc_area()
-        self.calc_centroid()
-
-        # create list of segments
-        #self.set_segments(points)
+        self.set_area()
+        self.set_centroid()
 
     def __str__(self):
         text = "Polygon with vertices:"
@@ -56,73 +106,32 @@ class Polygon:
             text += "\n{}".format(point)
         return text
 
-    def calc_area(self):
+    def set_area(self):
         '''
-        Calculate the area using the Shoelace Formula.
+        Converts float vertices into int vertices by multiplying by
+        the precision value before passing to calc_area. Then, return
+        value is rounded to nearest 1s place and divided by precision
+        value.
         '''
-        area = 0.0
-        for i in range(self.num_vertices):
-            # wrap around to first point at end of list
-            j = (i + 1) % self.num_vertices
-            area += self.vertices[i][0] * self.vertices[j][1]
-            area -= self.vertices[j][0] * self.vertices[i][1]
-        self.area = abs(area) * 0.5
+        self.area = int(round(
+            calc_area(self.int_vertices))) / Polygon.p
 
-    def calc_centroid(self):
+    def set_centroid(self):
         '''
-        Calculate the centroid or geometric center.
         '''
-        c_x = 0.0
-        c_y = 0.0
-        # get the X coordinate
-        for i in range(self.num_vertices):
-            # wrap around to first point at end of list
-            j = (i + 1) % self.num_vertices
-            c_x += (self.vertices[i][0] ** 2) * self.vertices[j][1]
-            c_x -= self.vertices[i][0] * self.vertices[j][0] * \
-                    self.vertices[i][1]
-            c_x += self.vertices[i][0] * self.vertices[j][0] * \
-                    self.vertices[j][1]
-            c_x -= (self.vertices[j][0] ** 2) * self.vertices[i][1]
-        c_x *= round(1 / (6 * self.area), 6)
-        # get the Y coordinate
-        for i in range(self.num_vertices):
-            # wrap around to first point at end of list
-            j = (i + 1) % self.num_vertices
-            c_y += self.vertices[i][0] * self.vertices[i][1] * \
-                    self.vertices[j][1]
-            c_y -= self.vertices[j][0] * (self.vertices[i][1] ** 2)
-            c_y += self.vertices[i][0] * (self.vertices[j][1] ** 2)
-            c_y -= self.vertices[j][0] * self.vertices[i][1] * \
-                    self.vertices[j][1]
-        c_y *= 1 / (6 * self.area)
-        self.centroid = (c_x, c_y)
+        self.int_centroid= calc_centroid(
+            int_vertices, self.area * Polygon.p))) / Polygon.p
 
     def rotate(self, angle):
         '''
-        Rotate the polygon about the origin by given angle in
+        Rotate the polygon about the centroid by given angle in
         radians using RH rule.
         '''
         rotated_vertices = []
-        for point in self.vertices:
-            # translate vector to origin
-            x = point[0] - self.centroid[0]
-            y = point[1] - self.centroid[1]
-            new_x = x * cos(angle) - y * sin(angle)
-            new_y = x * sin(angle) + y * cos(angle)
-            # translate vector back to centroid
-            rot_x = new_x + self.centroid[0]
-            rot_y = new_y + self.centroid[1]
-            rotated_vertices.append((rot_x, rot_y))
+        for vertex in self.vertices:
+            rotated_vertices.append(
+                rotate_point(vertex, angle, self.centroid))
         self.vertices = rotated_vertices
-
-    def rotate_np(self, angle):
-        '''
-        Rotate the polygon about the origin by given angle in
-        radians using RH rule.
-        '''
-        s, c = (np.sin(angle), np.cos(angle))
-        r_matrix = np.array([[c, -s], [c, s]])
 
     # unused functions below
     # ----------------------
