@@ -19,7 +19,7 @@ from spacious.room import Polygon
 
 # simple test case
 # 2x3 rectangle
-points1 = [
+POINTS1 = [
     (2, 0),
     (2, 3),
     (0, 3),
@@ -31,7 +31,7 @@ C1 = (1, 1.5)
 
 # edge test case 1
 # concave polygon using negative numbers, zero, and decimals
-points2 = [
+POINTS2 = [
     (1, 3),
     (-2, 2),
     (0, -1.4),
@@ -45,7 +45,7 @@ C2 = (1.2856093979441998, 0.7168869309838474)
 
 # edge test case 2
 # concave polygon with one 180 deg vertex
-points3 = [
+POINTS3 = [
     (5, 0),
     (3.5, -6.0),
     (2, -12),
@@ -136,9 +136,9 @@ P3_ROTATED = [
 
 class PolygonTestCase(unittest.TestCase):
     def setUp(self):
-        self.polygon1 = Polygon(points1)
-        self.polygon2 = Polygon(points2)
-        self.polygon3 = Polygon(points3)
+        self.polygon1 = Polygon(POINTS1)
+        self.polygon2 = Polygon(POINTS2)
+        self.polygon3 = Polygon(POINTS3)
 
     def test_str(self):
         self.assertEqual(str(self.polygon1),
@@ -162,6 +162,12 @@ class PolygonTestCase(unittest.TestCase):
                          '(2, -12)\n'\
                          '(-1.8, -5)\n'\
                          '(-6, -5)')
+
+    def test_to_float(self):
+        self.assertEqual(Polygon.to_float(BIG_INT), SMALL_FLOAT)
+
+    def test_to_int(self):
+        self.assertEqual(Polygon.to_int(SMALL_FLOAT), BIG_INT)
 
     def test_set_area(self):
         self.assertEqual(self.polygon1.area, A1)
