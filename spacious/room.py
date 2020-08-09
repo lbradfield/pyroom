@@ -37,16 +37,16 @@ class Polygon(object):
             representing points in the polygon, not including the
             origin (0, 0).
         '''
-        self.vertices = [(0, 0)]
+        self.vertices = [(0.0, 0.0)]
         self.int_vertices = [(0, 0)]
         for v_x, v_y in points:
             self.vertices.append(
-                (v_x, v_y))
+                (float(v_x), float(v_y)))
             self.int_vertices.append(
                 (self.to_int(v_x), self.to_int(v_y)))
         self.num_vertices = len(self.vertices)
 
-        self.set_area()
+        self.area = self.calc_area(self.vertices)
         self.set_centroid()
 
     def __str__(self):
@@ -55,35 +55,11 @@ class Polygon(object):
             text += "\n{}".format(point)
         return text
 
-    @staticmethod
-    def to_float(i):
-        '''
-        '''
-        return float(i / Polygon.p)
-
-    @staticmethod
-    def to_int(f):
-        '''
-        '''
-        return int(round(f * Polygon.p))
-
-    def set_area(self):
-        '''
-        Converts float vertices into int vertices by multiplying by
-        the precision value before passing to calc_area. Then, return
-        value is rounded to nearest 1s place and divided by precision
-        value.
-        '''
-        self.int_area = Polygon.calc_area(self.int_vertices)
-        self.area = self.to_float(self.int_area)
-
     def set_centroid(self):
         '''
         '''
-        self.int_centroid = Polygon.calc_centroid(self.int_vertices, self.int_area)
-        self.centroid = (
-            self.to_float(self.int_centroid[0]),
-            self.to_float(self.int_centroid[1]))
+        self.centroid = self.calc_centroid(
+            self.vertices, self.area)
 
     def rotate(self, angle):
         '''
@@ -91,71 +67,104 @@ class Polygon(object):
         radians using RH rule.
         '''
         rotated_vertices = []
-        for vertex in self.vertices:
+        for int_vertex in self.int_vertices:
             rotated_vertices.append(
-                rotate_point(vertex, angle, self.centroid))
-        self.vertices = rotated_vertices
+                self.rotate_point(int_vertex, angle, self.int_centroid))
+        self.int_vertices = rotated_vertices
+
+    @staticmethod
+    def to_float(i, power=1):
+        '''
+        Translate a large integer value into a floating point value
+        by dividing by the precision, p.
+        '''
+        return float(i / (Polygon.p ** power))
+
+    @staticmethod
+    def to_int(f, power=1):
+        '''
+        Translate a small floating point value into a large integer
+        value by multiplying by the precision, p, and rounding to the
+        nearest integer.
+        '''
+        return int(round(f * (Polygon.p ** power)))
 
     @staticmethod
     def calc_area(vertices):
         '''
-        Calculate the area of a polygon using the Shoelace Formula
-        given the vertices.
+        Calculate the area (float) of a polygon using the Shoelace
+        Formula given the vertices as floats. This method translates
+        the floating point vertex values into integers by multiplying
+        by the precision, p, performs the calculation, then
+        translates the result back to floating point.
         '''
-        area = 0.0
+        area = 0
         num_vertices = len(vertices)
         for i in range(num_vertices):
             # wrap around to first point at end of list
             j = (i + 1) % num_vertices
-            area += vertices[i][0] * vertices[j][1]
-            area -= vertices[j][0] * vertices[i][1]
-        return abs(area) * 0.5
+            x_0 = Polygon.to_int(vertices[i][0])
+            y_0 = Polygon.to_int(vertices[i][1])
+            x_1 = Polygon.to_int(vertices[j][0])
+            y_1 = Polygon.to_int(vertices[j][1])
+            area += x_0 * y_1
+            area -= x_1 * y_0
+        # divide by p^2 due to squaring nature of the area
+        # calculation
+        return Polygon.to_float(abs(area) * 0.5, 2)
 
     @staticmethod
     def calc_centroid(vertices, area):
         '''
-        Calculate the centroid of a polygon given the vertices and area.
+        Calculate the centroid of a polygon given the vertices and
+        area as integers.
         '''
-        c_x = 0.0
-        c_y = 0.0
+        c_x = 0
+        c_y = 0
         num_vertices = len(vertices)
-        # get the X coordinate
+        int_area = Polygon.to_int(area, 2)
         for i in range(num_vertices):
             # wrap around to first point at end of list
             j = (i + 1) % num_vertices
-            c_x += (vertices[i][0] ** 2) * vertices[j][1]
-            c_x -= vertices[i][0] * vertices[j][0] * \
-                    vertices[i][1]
-            c_x += vertices[i][0] * vertices[j][0] * \
-                    vertices[j][1]
-            c_x -= (vertices[j][0] ** 2) * vertices[i][1]
-        c_x *= 1 / (6 * area)
-        # get the Y coordinate
-        for i in range(num_vertices):
-            # wrap around to first point at end of list
-            j = (i + 1) % num_vertices
-            c_y += vertices[i][0] * vertices[i][1] * \
-                    vertices[j][1]
-            c_y -= vertices[j][0] * (vertices[i][1] ** 2)
-            c_y += vertices[i][0] * (vertices[j][1] ** 2)
-            c_y -= vertices[j][0] * vertices[i][1] * \
-                    vertices[j][1]
-        c_y *= 1 / (6 * area)
-        return c_x, c_y
+            x_0 = Polygon.to_int(vertices[i][0])
+            y_0 = Polygon.to_int(vertices[i][1])
+            x_1 = Polygon.to_int(vertices[j][0])
+            y_1 = Polygon.to_int(vertices[j][1])
+            # get the X coordinate
+            c_x += (x_0 ** 2) * y_1
+            c_x -= x_0 * x_1 * y_0
+            c_x += x_0 * x_1 * y_1
+            c_x -= (x_1 ** 2) * y_0
+            # get the Y coordinate
+            c_y += x_0 * y_0 * y_1
+            c_y -= x_1 * (y_0 ** 2)
+            c_y += x_0 * (y_1 ** 2)
+            c_y -= x_1 * y_0 * y_1
+        c_x *= 1 / (6 * int_area)
+        c_y *= 1 / (6 * int_area)
+        return Polygon.to_float(c_x), Polygon.to_float(c_y)
 
     @staticmethod
     def rotate_point(point, angle, origin=(0, 0)):
         '''
-        Rotate a point about any origin by given angle in radians using
-        the RH rule.
+        Rotate an point about any integer origin by given
+        angle in radians (float) using the RH rule.
         '''
+        logger.debug('Func: ' \
+                     '{}'.format(sys._getframe().f_code.co_name))
+        logger.debug('point: {}'.format(point))
+        logger.debug('angle: {}'.format(angle))
+        logger.debug('origin: {}'.format(origin))
         # translate vector to origin
         x = point[0] - origin[0]
         y = point[1] - origin[1]
+        logger.debug('translate vector to origin: {}'.format((x, y)))
         # multiply by the rotation matrix, then add the offset back in
         new_x = (x * cos(angle) - y * sin(angle)) + origin[0]
         new_y = (x * sin(angle) + y * cos(angle)) + origin[1]
-        return new_x, new_y
+        logger.debug('rotated point: {}'.format(
+            (int(round(new_x)), int(round(new_y)))))
+        return int(round(new_x)), int(round(new_y))
 
     # unused functions below
     # ----------------------

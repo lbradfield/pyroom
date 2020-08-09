@@ -1,14 +1,16 @@
 #/usr/bin/env python3
 
-# reference on floating-point errors:
-# https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/#:~:text=The%20idea%20of%20a%20relative,larger%20of%20the%20two%20numbers.
+'''
+reference on floating-point errors:
+https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/#:~:text=The%20idea%20of%20a%20relative,larger%20of%20the%20two%20numbers.
 
-# area calculation can be verified here:
-# https://rechneronline.de/pi/simple-polygon.php
-# centroid calculation can be verified here:
-# http://eguruchela.com/math/Calculator/polygon-centroid-point
-# rotation calculator
-# https://comnuan.com/cmnn05/cmnn05001/
+area calculation can be verified here:
+https://rechneronline.de/pi/simple-polygon.php
+centroid calculation can be verified here:
+http://eguruchela.com/math/Calculator/polygon-centroid-point
+rotation calculator
+https://comnuan.com/cmnn05/cmnn05001/
+'''
 
 # standard imports
 import unittest
@@ -17,46 +19,6 @@ import math
 # this package
 from spacious.room import Polygon
 
-# simple test case
-# 2x3 rectangle
-POINTS1 = [
-    (2, 0),
-    (2, 3),
-    (0, 3),
-]
-# area
-A1 = 6.0
-# centroid
-C1 = (1, 1.5)
-
-# edge test case 1
-# concave polygon using negative numbers, zero, and decimals
-POINTS2 = [
-    (1, 3),
-    (-2, 2),
-    (0, -1.4),
-    (8.5, 2)
-]
-# area
-A2 = 11.35
-# centroid
-#C2 = (1.286, 0.717)
-C2 = (1.2856093979441998, 0.7168869309838474)
-
-# edge test case 2
-# concave polygon with one 180 deg vertex
-POINTS3 = [
-    (5, 0),
-    (3.5, -6.0),
-    (2, -12),
-    (-1.8, -5),
-    (-6, -5)
-]
-# area
-A3 = 56.3
-# centroid
-C3 = (-0.7771462403789224, 4.343398460627591)
-
 # rotate angles in radians
 ROTATE_ANGLES = [
     0.0 * math.pi,
@@ -64,8 +26,22 @@ ROTATE_ANGLES = [
     -1.7 * math.pi,
     3.5 * math.pi,
 ]
+# ------------------------------------------------------------
+# simple test case
+# 2x3 rectangle
+points1 = [
+    (2.0, 0),
+    (2, 3),
+    (0.0, 3.0),
+]
+# area
+A1 = 6.0
+# centroid
+C1 = (1.0, 1.5)
+# rotated about the angles in ROTATE_ANGLES
 P1_ROTATED = [
-    [(0, 0), (2, 0), (2, 3), (0, 3)], # 0 rad
+    # 0 rad
+    [(0.0, 0.0), (2.0, 0.0), (2.0, 3.0), (0.0, 3.0)],
     # 0.5*pi rad
     [(2.5, 0.5), (2.5, 2.5), (-0.5, 2.5), (-0.5, 0.5)],
     # -1.7*pi rad
@@ -81,8 +57,24 @@ P1_ROTATED = [
      (2.5, 2.5)
     ],
 ]
+# ------------------------------------------------------------
+# edge test case 1
+# concave polygon using negative numbers, zero, and decimals
+points2 = [
+    (1, 3.0),
+    (-2, 2.0),
+    (0, -1.4),
+    (8.5, 2)
+]
+# area
+A2 = 11.35
+# centroid
+#C2 = (1.286, 0.717)
+C2 = (1.2856094, 0.7168869)
+# rotated about the angles in ROTATE_ANGLES
 P2_ROTATED = [
-    [(0, 0), (1, 3), (-2, 2), (0, -1.4), (8.5, 2)], # 0 rad
+    # 0 rad
+    [(0.0, 0.0), (1.0, 3.0), (-2.0, 2.0), (0.0, -1.4), (8.5, 2.0)],
     # 0.5*pi rad
     [(2.0025, -0.5687),
      (-0.9975, 0.4313),
@@ -105,9 +97,30 @@ P2_ROTATED = [
      (2.5687, -6.4975)
     ],
 ]
+# ------------------------------------------------------------
+# edge test case 2
+# concave polygon with one 180 deg vertex
+points3 = [
+    (5, 0),
+    (3.5, -6.0),
+    (2, -12),
+    (-1.8, -5),
+    (-6.0, -5)
+]
+# area
+A3 = 56.3
+# centroid
+C3 = (-0.7771462, 4.3433985)
+# rotated about the angles in ROTATE_ANGLES
 P3_ROTATED = [
     # 0 rad
-    [(0, 0), (5, 0), (3.5, -6.0), (2, -12), (-1.8, -5), (-6, -5)],
+    [(0.0, 0.0),
+     (5.0, 0.0),
+     (3.5, -6.0),
+     (2.0, -12.0),
+     (-1.8, -5.0),
+     (-6.0, -5.0)
+    ],
     # 0.5*pi rad
     [(3.5663, 5.1205),
      (3.5663, 10.1205),
@@ -136,38 +149,32 @@ P3_ROTATED = [
 
 class PolygonTestCase(unittest.TestCase):
     def setUp(self):
-        self.polygon1 = Polygon(POINTS1)
-        self.polygon2 = Polygon(POINTS2)
-        self.polygon3 = Polygon(POINTS3)
+        self.polygon1 = Polygon(points1)
+        self.polygon2 = Polygon(points2)
+        self.polygon3 = Polygon(points3)
 
     def test_str(self):
         self.assertEqual(str(self.polygon1),
                 'Polygon with vertices:\n'\
-                         '(0, 0)\n'\
-                         '(2, 0)\n'\
-                         '(2, 3)\n'\
-                         '(0, 3)')
+                         '(0.0, 0.0)\n'\
+                         '(2.0, 0.0)\n'\
+                         '(2.0, 3.0)\n'\
+                         '(0.0, 3.0)')
         self.assertEqual(str(self.polygon2),
                 'Polygon with vertices:\n'\
-                         '(0, 0)\n'\
-                         '(1, 3)\n'\
-                         '(-2, 2)\n'\
-                         '(0, -1.4)\n'\
-                         '(8.5, 2)')
+                         '(0.0, 0.0)\n'\
+                         '(1.0, 3.0)\n'\
+                         '(-2.0, 2.0)\n'\
+                         '(0.0, -1.4)\n'\
+                         '(8.5, 2.0)')
         self.assertEqual(str(self.polygon3),
                 'Polygon with vertices:\n'\
-                         '(0, 0)\n'\
-                         '(5, 0)\n'\
+                         '(0.0, 0.0)\n'\
+                         '(5.0, 0.0)\n'\
                          '(3.5, -6.0)\n'\
-                         '(2, -12)\n'\
-                         '(-1.8, -5)\n'\
-                         '(-6, -5)')
-
-    def test_to_float(self):
-        self.assertEqual(Polygon.to_float(BIG_INT), SMALL_FLOAT)
-
-    def test_to_int(self):
-        self.assertEqual(Polygon.to_int(SMALL_FLOAT), BIG_INT)
+                         '(2.0, -12.0)\n'\
+                         '(-1.8, -5.0)\n'\
+                         '(-6.0, -5.0)')
 
     def test_set_area(self):
         self.assertEqual(self.polygon1.area, A1)
