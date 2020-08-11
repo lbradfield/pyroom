@@ -12,6 +12,9 @@ rotation calculator
 https://comnuan.com/cmnn05/cmnn05001/
 '''
 
+# TODO: Add test case for triangle to catch signed vs unsigned area
+# in centroid calculation
+
 # standard imports
 import unittest
 import math
