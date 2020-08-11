@@ -47,19 +47,15 @@ class Polygon(object):
         self.num_vertices = len(self.vertices)
 
         self.area = self.calc_area(self.vertices)
-        self.set_centroid()
+        signed_area = self.calc_area(self.vertices, True)
+        self.centroid = self.calc_centroid(
+            self.vertices, signed_area)
 
     def __str__(self):
         text = "Polygon with vertices:"
         for point in self.vertices:
             text += "\n{}".format(point)
         return text
-
-    def set_centroid(self):
-        '''
-        '''
-        self.centroid = self.calc_centroid(
-            self.vertices, self.area)
 
     def rotate(self, angle):
         '''
@@ -78,7 +74,8 @@ class Polygon(object):
         Translate a large integer value into a floating point value
         by dividing by the precision, p.
         '''
-        return float(i / (Polygon.p ** power))
+        int_i = int(round(i))
+        return float(int_i / (Polygon.p ** power))
 
     @staticmethod
     def to_int(f, power=1):
@@ -87,10 +84,11 @@ class Polygon(object):
         value by multiplying by the precision, p, and rounding to the
         nearest integer.
         '''
-        return int(round(f * (Polygon.p ** power)))
+        big_f = f * (Polygon.p ** power)
+        return int(round(big_f))
 
     @staticmethod
-    def calc_area(vertices):
+    def calc_area(vertices, signed=False):
         '''
         Calculate the area (float) of a polygon using the Shoelace
         Formula given the vertices as floats. This method translates
@@ -111,7 +109,10 @@ class Polygon(object):
             area -= x_1 * y_0
         # divide by p^2 due to squaring nature of the area
         # calculation
-        return Polygon.to_float(abs(area) * 0.5, 2)
+        if signed:
+            return Polygon.to_float(area * 0.5, 2)
+        else:
+            return Polygon.to_float(abs(area) * 0.5, 2)
 
     @staticmethod
     def calc_centroid(vertices, area):
@@ -119,10 +120,12 @@ class Polygon(object):
         Calculate the centroid of a polygon given the vertices and
         area as integers.
         '''
+        logger.debug('Func: ' \
+                     '{}'.format(sys._getframe().f_code.co_name))
         c_x = 0
         c_y = 0
         num_vertices = len(vertices)
-        int_area = Polygon.to_int(area, 2)
+        signed_int_area = Polygon.to_int(area, 2)
         for i in range(num_vertices):
             # wrap around to first point at end of list
             j = (i + 1) % num_vertices
@@ -140,8 +143,12 @@ class Polygon(object):
             c_y -= x_1 * (y_0 ** 2)
             c_y += x_0 * (y_1 ** 2)
             c_y -= x_1 * y_0 * y_1
-        c_x *= 1 / (6 * int_area)
-        c_y *= 1 / (6 * int_area)
+        logger.debug('c_x, c_y before div: {}'.format((c_x, c_y)))
+        c_x *= 1 / (6 * signed_int_area)
+        c_y *= 1 / (6 * signed_int_area)
+        logger.debug('c_x, c_y after div: {}'.format((c_x, c_y)))
+        logger.debug('translated c_x, c_y: {}'.format(
+            (Polygon.to_float(c_x), Polygon.to_float(c_y))))
         return Polygon.to_float(c_x), Polygon.to_float(c_y)
 
     @staticmethod
