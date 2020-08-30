@@ -37,6 +37,9 @@ class Polygon(object):
             representing points in the polygon, not including the
             origin (0, 0).
         '''
+        logger.debug('')
+        logger.debug('constructing with points: ' \
+                     '{}'.format(points))
         self.vertices = [(0.0, 0.0)]
         self.int_vertices = [(0, 0)]
         for v_x, v_y in points:
@@ -62,11 +65,12 @@ class Polygon(object):
         Rotate the polygon about the centroid by given angle in
         radians using RH rule.
         '''
+        logger.debug('')
         rotated_vertices = []
-        for int_vertex in self.int_vertices:
+        for vertex in self.vertices:
             rotated_vertices.append(
-                self.rotate_point(int_vertex, angle, self.int_centroid))
-        self.int_vertices = rotated_vertices
+                self.rotate_point(vertex, angle, self.centroid))
+        self.vertices = rotated_vertices
 
     @staticmethod
     def to_float(i, power=1):
@@ -91,11 +95,12 @@ class Polygon(object):
     def calc_area(vertices, signed=False):
         '''
         Calculate the area (float) of a polygon using the Shoelace
-        Formula given the vertices as floats. This method translates
+        Formula given the vertices as floats. This method transforms
         the floating point vertex values into integers by multiplying
         by the precision, p, performs the calculation, then
-        translates the result back to floating point.
+        transforms the result back to floating point.
         '''
+        logger.debug('')
         area = 0
         num_vertices = len(vertices)
         for i in range(num_vertices):
@@ -107,12 +112,14 @@ class Polygon(object):
             y_1 = Polygon.to_int(vertices[j][1])
             area += x_0 * y_1
             area -= x_1 * y_0
+        if signed:
+            final_area = area
+        else:
+            final_area = abs(area)
         # divide by p^2 due to squaring nature of the area
         # calculation
-        if signed:
-            return Polygon.to_float(area * 0.5, 2)
-        else:
-            return Polygon.to_float(abs(area) * 0.5, 2)
+        return Polygon.to_float(final_area * 0.5, 2)
+
 
     @staticmethod
     def calc_centroid(vertices, area):
@@ -120,8 +127,7 @@ class Polygon(object):
         Calculate the centroid of a polygon given the vertices and
         area as integers.
         '''
-        logger.debug('Func: ' \
-                     '{}'.format(sys._getframe().f_code.co_name))
+        logger.debug('')
         c_x = 0
         c_y = 0
         num_vertices = len(vertices)
@@ -147,31 +153,37 @@ class Polygon(object):
         c_x *= 1 / (6 * signed_int_area)
         c_y *= 1 / (6 * signed_int_area)
         logger.debug('c_x, c_y after div: {}'.format((c_x, c_y)))
-        logger.debug('translated c_x, c_y: {}'.format(
+        logger.debug('transformed c_x, c_y: {}'.format(
             (Polygon.to_float(c_x), Polygon.to_float(c_y))))
         return Polygon.to_float(c_x), Polygon.to_float(c_y)
 
+    #self.rotate_point(vertex, angle, self.centroid))
     @staticmethod
     def rotate_point(point, angle, origin=(0, 0)):
         '''
         Rotate an point about any integer origin by given
         angle in radians (float) using the RH rule.
         '''
-        logger.debug('Func: ' \
-                     '{}'.format(sys._getframe().f_code.co_name))
+        logger.debug('')
         logger.debug('point: {}'.format(point))
         logger.debug('angle: {}'.format(angle))
         logger.debug('origin: {}'.format(origin))
-        # translate vector to origin
-        x = point[0] - origin[0]
-        y = point[1] - origin[1]
+        # transform origin vector elements to ints
+        int_origin = (Polygon.to_int(origin[0]),
+                      Polygon.to_int(origin[1]))
+        logger.debug('int_origin: {}'.format(int_origin))
+        # transform the point vector elements to ints,
+        # then translate to origin
+        x = Polygon.to_int(point[0]) - int_origin[0]
+        y = Polygon.to_int(point[1]) - int_origin[1]
         logger.debug('translate vector to origin: {}'.format((x, y)))
-        # multiply by the rotation matrix, then add the offset back in
-        new_x = (x * cos(angle) - y * sin(angle)) + origin[0]
-        new_y = (x * sin(angle) + y * cos(angle)) + origin[1]
+        # multiply by the rotation matrix,
+        # then add the offset back in
+        new_x = (x * cos(angle) - y * sin(angle)) + int_origin[0]
+        new_y = (x * sin(angle) + y * cos(angle)) + int_origin[1]
         logger.debug('rotated point: {}'.format(
-            (int(round(new_x)), int(round(new_y)))))
-        return int(round(new_x)), int(round(new_y))
+            (Polygon.to_float(new_x), Polygon.to_float(new_y))))
+        return Polygon.to_float(new_x), Polygon.to_float(new_y)
 
     # unused functions below
     # ----------------------
@@ -240,7 +252,6 @@ class Room(Polygon):
     units = UNITS
 
     def __init__(self, name, points):
-        logger.debug("Func() : " + sys._getframe().f_code.co_name)
         self.name = name
         Polygon.__init__(points)
         self.furniture = []
