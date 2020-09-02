@@ -1,4 +1,8 @@
 #/usr/bin/env python3
+# TODO:
+'''
+'''
+
 
 ############################
 # imports
@@ -19,10 +23,9 @@ class Polygon(object):
 
     version = '0.1'
 
-    # precision of floats
-    # this is used to convert all floats into ints before
-    # calculations take place
-    p = 10**7
+    # precision - number of decimal places to use in float and integer
+    # representation
+    prec = 7
 
     def __init__(self, points):
         '''
@@ -78,17 +81,24 @@ class Polygon(object):
         Translate a large integer value into a floating point value
         by dividing by the precision, p.
         '''
+        logger.debug('i: {}, power: {}'.format(i, power))
         int_i = int(round(i))
-        return float(int_i / (Polygon.p ** power))
+        logger.debug('int_i: {}'.format(int_i))
+        raw_f = int_i / (10 ** (Polygon.prec * power))
+        logger.debug('raw_f: {}'.format(raw_f))
+        # round to 1 less than the precision to handle numbers very
+        # close to zero (e.g. -1e-07)
+        return float(round(raw_f, Polygon.prec - 1))
 
     @staticmethod
     def to_int(f, power=1):
+        ''' Translate a small floating point value into a large
+        integer value by multiplying by the precision, p, and
+        rounding to the nearest integer.
         '''
-        Translate a small floating point value into a large integer
-        value by multiplying by the precision, p, and rounding to the
-        nearest integer.
-        '''
-        big_f = f * (Polygon.p ** power)
+        logger.debug('f: {}, power: {}'.format(f, power))
+        big_f = f * (10 ** (Polygon.prec * power))
+        logger.debug('big_f: {}'.format(big_f))
         return int(round(big_f))
 
     @staticmethod
@@ -100,7 +110,8 @@ class Polygon(object):
         by the precision, p, performs the calculation, then
         transforms the result back to floating point.
         '''
-        logger.debug('')
+        logger.debug('vertices: {}, signed: {}'.format(
+            vertices, signed))
         area = 0
         num_vertices = len(vertices)
         for i in range(num_vertices):
@@ -113,12 +124,13 @@ class Polygon(object):
             area += x_0 * y_1
             area -= x_1 * y_0
         if signed:
-            final_area = area
+            int_area = area
         else:
-            final_area = abs(area)
+            int_area = abs(area)
         # divide by p^2 due to squaring nature of the area
         # calculation
-        return Polygon.to_float(final_area * 0.5, 2)
+        logger.debug('int_area: {}'.format(int_area))
+        return Polygon.to_float(int_area * 0.5, 2)
 
 
     @staticmethod
@@ -127,7 +139,8 @@ class Polygon(object):
         Calculate the centroid of a polygon given the vertices and
         area as integers.
         '''
-        logger.debug('')
+        logger.debug('vertices: {}, area: {}'.format(
+            vertices, area))
         c_x = 0
         c_y = 0
         num_vertices = len(vertices)

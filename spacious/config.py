@@ -18,7 +18,7 @@ UNITS = 'ft'
 ############################
 LOG_LEVEL = logging.DEBUG
 LOG_FORMAT = \
-    '%(levelname)s|%(module)s|%(funcName)s||%(message)s'
+    '%(levelname)s | %(module)s | %(funcName)s | %(message)s'
 LOG_NAME = 'pyroom'
 # create the formatter
 formatter = logging.Formatter(LOG_FORMAT)

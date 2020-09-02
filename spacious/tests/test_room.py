@@ -59,10 +59,10 @@ P1_ROTATED = [
     # 0.5*pi rad
     [(2.5, 0.5), (2.5, 2.5), (-0.5, 2.5), (-0.5, 0.5)],
     # -1.7*pi rad
-    [(1.6257, -0.1907),
-     (2.8013, 1.4273),
-     (0.3743, 3.1907),
-     (-0.8013, 1.5727)
+    [(1.6257402, -0.1906949),
+     (2.8013107, 1.4273391),
+     (0.3742598, 3.1906949),
+     (-0.8013107, 1.5726609)
     ],
     # 3.5*pi rad
     [(-0.5, 2.5),
@@ -106,11 +106,11 @@ P2_ROTATED = [
      (0.0024963, 7.9312775)
     ],
     # -1.7*pi rad
-    [(1.1099, -0.7446),
-     (-0.7293, 1.8278),
-     (-1.6837, -1.1870),
-     (2.2425, -1.5675),
-     (4.4881, 7.3076)
+    [(1.1099208, -0.7445685),
+     (-0.7293449, 1.8278043),
+     (-1.6836837, -1.1870320),
+     (2.2425446, -1.5674679),
+     (4.4880615, 7.3076465)
     ],
     # 3.5*pi rad
     [(0.5687, 2.0025),
@@ -156,20 +156,20 @@ P3_ROTATED = [
      (-6.0, -5.0)
     ],
     # 0.5*pi rad
-    [(3.5662523, 5.1205447),
+    [(-3.5662523, -5.1205447),
      (-3.5662523, -0.1205447),
-     (9.5663, 8.6205),
-     (15.5663, 7.1205),
-     (8.5663, 3.3205),
-     (8.5663, -0.8795)
+     (2.4337477, -1.6205447),
+     (8.4337477, -3.1205447),
+     (1.4337477, -6.9205447),
+     (1.4337477, -11.1205447),
     ],
     # -1.7*pi rad
-    [(3.1935, 2.4191),
-     (6.1325, 6.4642),
-     (10.1049, 1.7240),
-     (14.0773, -3.0163),
-     (6.1806, -1.9760),
-     (3.7119, -5.3739)
+    [(-3.1935321, -2.4191374),
+     (-0.2546058, 1.6259476),
+     (3.7178183, -3.1142894),
+     (7.6902424, -7.8545264),
+     (-0.2064606, -6.8142943),
+     (-2.6751586, -10.2121656),
     ],
     # 3.5*pi rad
     [(-5.1205, 3.5663),
@@ -273,13 +273,12 @@ class PolygonTestCase(unittest.TestCase):
                                  P2_ROTATED[i])
                 self.assertEqual(self.polygon3.vertices,
                                  P3_ROTATED[i])
-            with self.subTest(angle=-angle):
-                self.polygon1.rotate(angle)
-                self.polygon2.rotate(angle)
-                self.polygon3.rotate(angle)
-                self.assertEqual(self.polygon1.vertices, V1)
-                self.assertEqual(self.polygon2.vertices, V2)
-                self.assertEqual(self.polygon3.vertices, V3)
+            self.polygon1.rotate(-angle)
+            self.polygon2.rotate(-angle)
+            self.polygon3.rotate(-angle)
+            self.assertEqual(self.polygon1.vertices, V1)
+            self.assertEqual(self.polygon2.vertices, V2)
+            self.assertEqual(self.polygon3.vertices, V3)
             print(self.polygon1.vertices)
 
 class RoomTestCase(unittest.TestCase):
