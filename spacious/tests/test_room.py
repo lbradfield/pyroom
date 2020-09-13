@@ -93,7 +93,7 @@ A2 = 11.35
 # signed area, used for centroid calculation
 SA2 = 0
 # centroid
-C2 = (1.2856094, 0.7168869)
+C2 = (1.285609, 0.716887)
 # rotated about the angles in ROTATE_ANGLES
 P2_ROTATED = [
     # 0 rad
@@ -144,7 +144,7 @@ A3 = 56.3
 # signed area, used for centroid calculation
 SA3 = 0
 # centroid
-C3 = (0.7771462, -4.3433985)
+C3 = (0.777146, -4.343399)
 # rotated about the angles in ROTATE_ANGLES
 P3_ROTATED = [
     # 0 rad

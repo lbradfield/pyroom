@@ -25,7 +25,7 @@ class Polygon(object):
 
     # precision - number of decimal places to use in float and integer
     # representation
-    prec = 7
+    prec = 10
 
     def __init__(self, points):
         '''
@@ -81,14 +81,13 @@ class Polygon(object):
         Translate a large integer value into a floating point value
         by dividing by the precision, p.
         '''
-        logger.debug('i: {}, power: {}'.format(i, power))
         int_i = int(round(i))
-        logger.debug('int_i: {}'.format(int_i))
         raw_f = int_i / (10 ** (Polygon.prec * power))
-        logger.debug('raw_f: {}'.format(raw_f))
+        logger.debug('i: {}, power: {} -> raw_f: {}'.format(
+            i, power, raw_f))
         # round to 1 less than the precision to handle numbers very
         # close to zero (e.g. -1e-07)
-        return float(round(raw_f, Polygon.prec - 1))
+        return float(round(raw_f, Polygon.prec - 3))
 
     @staticmethod
     def to_int(f, power=1):
@@ -96,9 +95,9 @@ class Polygon(object):
         integer value by multiplying by the precision, p, and
         rounding to the nearest integer.
         '''
-        logger.debug('f: {}, power: {}'.format(f, power))
         big_f = f * (10 ** (Polygon.prec * power))
-        logger.debug('big_f: {}'.format(big_f))
+        logger.debug('f: {}, power: {} -> big_f: {}'.format(
+            f, power, big_f))
         return int(round(big_f))
 
     @staticmethod
@@ -174,10 +173,9 @@ class Polygon(object):
     @staticmethod
     def rotate_point(point, angle, origin=(0, 0)):
         '''
-        Rotate an point about any integer origin by given
+        Rotate a point about any integer origin by given
         angle in radians (float) using the RH rule.
         '''
-        logger.debug('')
         logger.debug('point: {}'.format(point))
         logger.debug('angle: {}'.format(angle))
         logger.debug('origin: {}'.format(origin))
