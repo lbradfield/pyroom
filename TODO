@@ -1,0 +1,5 @@
+re-install pipenv with --user flag to avoid breaking system-wide pip packages
+
+fix python requirement in Pipfile
+
+implement Decimal library after reading through documentation
