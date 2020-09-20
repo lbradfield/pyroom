@@ -176,9 +176,8 @@ class Polygon(object):
         Rotate a point about any integer origin by given
         angle in radians (float) using the RH rule.
         '''
-        logger.debug('point: {}'.format(point))
-        logger.debug('angle: {}'.format(angle))
-        logger.debug('origin: {}'.format(origin))
+        logger.debug('point={}, angle={}, origin={}'.format(
+            point, angle, origin))
         # transform origin vector elements to ints
         int_origin = (Polygon.to_int(origin[0]),
                       Polygon.to_int(origin[1]))
@@ -192,6 +191,8 @@ class Polygon(object):
         # then add the offset back in
         new_x = (x * cos(angle) - y * sin(angle)) + int_origin[0]
         new_y = (x * sin(angle) + y * cos(angle)) + int_origin[1]
+        logger.debug('int rotated point: {}'.format(
+            (new_x, new_y)))
         logger.debug('rotated point: {}'.format(
             (Polygon.to_float(new_x), Polygon.to_float(new_y))))
         return Polygon.to_float(new_x), Polygon.to_float(new_y)
