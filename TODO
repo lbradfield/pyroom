@@ -1,5 +1,16 @@
-re-install pipenv with --user flag to avoid breaking system-wide pip packages
+Phase I
+    implement Decimal library after reading through documentation
+    write tests for separate rotate_point functions
 
-fix python requirement in Pipfile
+Phase II
+    write furniture and room classes
 
-implement Decimal library after reading through documentation
+Phase III
+    write GUI class
+    input class
+
+Phase IV
+    
+
+Phase V
+    
