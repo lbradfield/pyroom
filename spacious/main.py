@@ -1,4 +1,9 @@
 #/usr/bin/env python3
+print('''
+      __file__ = {}
+      __name__ = {}
+      __package__ = {}
+      '''.format(__file__, __name__, __package__))
 
 ############################
 # imports
@@ -8,7 +13,8 @@ import sys
 from os.path import abspath, join, dirname
 
 # local imports
-from config import *
+import room
+from tests import test_room
 
 # add the package to python path temporarily
 # TODO: create setup.py to install the package in the standard way
@@ -28,6 +34,6 @@ sys.path.insert(0, pkg)
 view_sys_path()
 '''
 
-# import pyroom package
-from pyroom.room import Room
 
+if sys.argv[1] == 'test':
+    test_room.unittest.main()
