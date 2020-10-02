@@ -1,8 +1,12 @@
 #/usr/bin/env python3
-# TODO:
 '''
+Main objects to be interacted with and manipulated through the UI.
+Includes:
+    - Polygon: A base object providing all math operations
+    - Room: Inherits Polygon and contains instances of Furniture
+    - Furniture: Inherits Polygon and interacts with Room
 '''
-
+# TODO: implement decimal library
 
 ############################
 # imports
@@ -10,10 +14,13 @@
 # standard imports
 import sys
 from math import sin, cos
+
+# 3rd party
 import numpy as np
+from decimal import Decimal, getcontext
 
 # local imports
-from spacious.config import *
+from .config import *
 
 class Polygon(object):
     '''
@@ -22,10 +29,8 @@ class Polygon(object):
     '''
 
     version = '0.1'
-
-    # precision - number of decimal places to use in float and integer
-    # representation
-    prec = 10
+    # the precision of floats, provided by Decimal
+    getcontext().prec = 7
 
     def __init__(self, points):
         '''
@@ -36,20 +41,16 @@ class Polygon(object):
         Parameters
         ----------
         points : list
-            An ordered list of 2-element tuples of integers
+            An ordered list of 2-element tuples of floats
             representing points in the polygon, not including the
             origin (0, 0).
         '''
-        logger.debug('')
         logger.debug('constructing with points: ' \
                      '{}'.format(points))
         self.vertices = [(0.0, 0.0)]
-        self.int_vertices = [(0, 0)]
         for v_x, v_y in points:
             self.vertices.append(
                 (float(v_x), float(v_y)))
-            self.int_vertices.append(
-                (self.to_int(v_x), self.to_int(v_y)))
         self.num_vertices = len(self.vertices)
 
         self.area = self.calc_area(self.vertices)
@@ -76,81 +77,51 @@ class Polygon(object):
         self.vertices = rotated_vertices
 
     @staticmethod
-    def to_float(i, power=1):
-        '''
-        Translate a large integer value into a floating point value
-        by dividing by the precision, p.
-        '''
-        int_i = int(round(i))
-        raw_f = int_i / (10 ** (Polygon.prec * power))
-        logger.debug('i: {}, power: {} -> raw_f: {}'.format(
-            i, power, raw_f))
-        # round to 1 less than the precision to handle numbers very
-        # close to zero (e.g. -1e-07)
-        return float(round(raw_f, Polygon.prec - 3))
-
-    @staticmethod
-    def to_int(f, power=1):
-        ''' Translate a small floating point value into a large
-        integer value by multiplying by the precision, p, and
-        rounding to the nearest integer.
-        '''
-        big_f = f * (10 ** (Polygon.prec * power))
-        logger.debug('f: {}, power: {} -> big_f: {}'.format(
-            f, power, big_f))
-        return int(round(big_f))
-
-    @staticmethod
     def calc_area(vertices, signed=False):
         '''
-        Calculate the area (float) of a polygon using the Shoelace
-        Formula given the vertices as floats. This method transforms
-        the floating point vertex values into integers by multiplying
-        by the precision, p, performs the calculation, then
-        transforms the result back to floating point.
+        Calculate the area of a polygon using the Shoelace
+        Formula given the vertices as floats. This method uses the
+        decimal library to perform floating-point calculations.
         '''
         logger.debug('vertices: {}, signed: {}'.format(
             vertices, signed))
-        area = 0
+        area = Decimal()
         num_vertices = len(vertices)
         for i in range(num_vertices):
             # wrap around to first point at end of list
             j = (i + 1) % num_vertices
-            x_0 = Polygon.to_int(vertices[i][0])
-            y_0 = Polygon.to_int(vertices[i][1])
-            x_1 = Polygon.to_int(vertices[j][0])
-            y_1 = Polygon.to_int(vertices[j][1])
+            x_0 = Decimal(str(vertices[i][0]))
+            y_0 = Decimal(str(vertices[i][1]))
+            x_1 = Decimal(str(vertices[j][0]))
+            y_1 = Decimal(str(vertices[j][1]))
             area += x_0 * y_1
             area -= x_1 * y_0
+        area /= 2
+        logger.debug('area: {}'.format(area))
         if signed:
-            int_area = area
+            return float(area)
         else:
-            int_area = abs(area)
-        # divide by p^2 due to squaring nature of the area
-        # calculation
-        logger.debug('int_area: {}'.format(int_area))
-        return Polygon.to_float(int_area * 0.5, 2)
-
+            return float(abs(area))
 
     @staticmethod
-    def calc_centroid(vertices, area):
+    def calc_centroid(vertices, s_area):
         '''
         Calculate the centroid of a polygon given the vertices and
-        area as integers.
+        area as floats. This method uses the decimal library to
+        perform floating-point calculations.
         '''
-        logger.debug('vertices: {}, area: {}'.format(
-            vertices, area))
-        c_x = 0
-        c_y = 0
+        logger.debug('vertices: {}, s_area: {}'.format(
+            vertices, s_area))
+        c_x = Decimal()
+        c_y = Decimal()
         num_vertices = len(vertices)
-        signed_int_area = Polygon.to_int(area, 2)
         for i in range(num_vertices):
             # wrap around to first point at end of list
             j = (i + 1) % num_vertices
-            x_0 = Polygon.to_int(vertices[i][0])
-            y_0 = Polygon.to_int(vertices[i][1])
-            x_1 = Polygon.to_int(vertices[j][0])
-            y_1 = Polygon.to_int(vertices[j][1])
+            x_0 = Decimal(str(vertices[i][0]))
+            y_0 = Decimal(str(vertices[i][1]))
+            x_1 = Decimal(str(vertices[j][0]))
+            y_1 = Decimal(str(vertices[j][1]))
             # get the X coordinate
             c_x += (x_0 ** 2) * y_1
             c_x -= x_0 * x_1 * y_0
@@ -162,40 +133,36 @@ class Polygon(object):
             c_y += x_0 * (y_1 ** 2)
             c_y -= x_1 * y_0 * y_1
         logger.debug('c_x, c_y before div: {}'.format((c_x, c_y)))
-        c_x *= 1 / (6 * signed_int_area)
-        c_y *= 1 / (6 * signed_int_area)
+        c_x /= 6 * Decimal(str(s_area))
+        c_y /= 6 * Decimal(str(s_area))
         logger.debug('c_x, c_y after div: {}'.format((c_x, c_y)))
-        logger.debug('transformed c_x, c_y: {}'.format(
-            (Polygon.to_float(c_x), Polygon.to_float(c_y))))
-        return Polygon.to_float(c_x), Polygon.to_float(c_y)
+        return float(c_x), float(c_y)
 
-    #self.rotate_point(vertex, angle, self.centroid))
     @staticmethod
     def rotate_point(point, angle, origin=(0, 0)):
         '''
-        Rotate a point about any integer origin by given
-        angle in radians (float) using the RH rule.
+        Rotate a point about any origin, given as a tuple of floats,
+        by given angle in radians using the RH rule. This method
+        uses the decimal library to perform floating-point
+        calculations.
         '''
         logger.debug('point={}, angle={}, origin={}'.format(
             point, angle, origin))
-        # transform origin vector elements to ints
-        int_origin = (Polygon.to_int(origin[0]),
-                      Polygon.to_int(origin[1]))
-        logger.debug('int_origin: {}'.format(int_origin))
-        # transform the point vector elements to ints,
-        # then translate to origin
-        x = Polygon.to_int(point[0]) - int_origin[0]
-        y = Polygon.to_int(point[1]) - int_origin[1]
+        sin_ang = Decimal(str(sin(angle)))
+        cos_ang = Decimal(str(cos(angle)))
+        o_x = Decimal(str(origin[0]))
+        o_y = Decimal(str(origin[1]))
+        # the point relative to the origin
+        x = Decimal(str(point[0])) - o_x
+        y = Decimal(str(point[1])) - o_y
         logger.debug('translate vector to origin: {}'.format((x, y)))
         # multiply by the rotation matrix,
         # then add the offset back in
-        new_x = (x * cos(angle) - y * sin(angle)) + int_origin[0]
-        new_y = (x * sin(angle) + y * cos(angle)) + int_origin[1]
-        logger.debug('int rotated point: {}'.format(
-            (new_x, new_y)))
+        new_x = (x * cos_ang - y * sin_ang) + o_x
+        new_y = (x * sin_ang + y * cos_ang) + o_y
         logger.debug('rotated point: {}'.format(
-            (Polygon.to_float(new_x), Polygon.to_float(new_y))))
-        return Polygon.to_float(new_x), Polygon.to_float(new_y)
+            (new_x, new_y)))
+        return float(new_x), float(new_y)
 
     # unused functions below
     # ----------------------
