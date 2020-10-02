@@ -1,4 +1,9 @@
 #/usr/bin/env python3
+print('''
+        __file__ = {}
+        __name__ = {}
+        __package__ = {}
+        '''.format(__file__, __name__, __package__))
 
 '''
 reference on floating-point errors:
@@ -22,7 +27,8 @@ import unittest
 import math
 
 # this package
-from spacious.room import Polygon
+import spacious
+from spacious import room
 
 # rotate angles in radians
 ROTATE_ANGLES = [
@@ -283,11 +289,4 @@ class PolygonTestCase(unittest.TestCase):
 
 class RoomTestCase(unittest.TestCase):
     pass
-
-
-
-if __name__ == "__main__":
-    unittest.main()
-
-
 
