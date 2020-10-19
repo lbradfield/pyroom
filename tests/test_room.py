@@ -28,7 +28,7 @@ import math
 
 # this package
 import spacious
-from spacious import room
+from spacious.room import Polygon
 
 # rotate angles in radians
 ROTATE_ANGLES = [
@@ -55,7 +55,7 @@ V1 = [
 # area
 A1 = 6.0
 # signed area, used for centroid calculation
-SA1 = 0
+SA1 = 6.0
 # centroid
 C1 = (1.0, 1.5)
 # rotated about the angles in ROTATE_ANGLES
@@ -68,62 +68,67 @@ P1_ROTATED = [
     [(1.6257402, -0.1906949),
      (2.8013107, 1.4273391),
      (0.3742598, 3.1906949),
-     (-0.8013107, 1.5726609)
+     (-0.8013107, 1.5726609),
     ],
     # 3.5*pi rad
     [(-0.5, 2.5),
      (-0.5, 0.5),
      (2.5, 0.5),
-     (2.5, 2.5)
+     (2.5, 2.5),
     ],
 ]
 # ------------------------------------------------------------
 # edge test case 1
 # concave polygon using negative numbers, zero, and decimals
 points2 = [
-    (1, 3.0),
-    (-2, 2.0),
+    (8.5, 2),
     (0, -1.4),
-    (8.5, 2)
+    (-2, 2.0),
+    (1, 3.0),
 ]
 # vertices
 V2 = [
     (0.0, 0.0),
-    (1.0, 3.0),
-    (-2.0, 2.0),
+    (8.5, 2.0),
     (0.0, -1.4),
-    (8.5, 2.0)
+    (-2.0, 2.0),
+    (1.0, 3.0),
 ]
 # area
 A2 = 11.35
 # signed area, used for centroid calculation
-SA2 = 0
+SA2 = -11.35
 # centroid
-C2 = (1.285609, 0.716887)
+C2 = (1.2856094, 0.71688693)
 # rotated about the angles in ROTATE_ANGLES
 P2_ROTATED = [
     # 0 rad
-    [(0.0, 0.0), (1.0, 3.0), (-2.0, 2.0), (0.0, -1.4), (8.5, 2.0)],
+    [(0.0, 0.0),
+     (8.5, 2.0),
+     (0.0, -1.4),
+     (-2.0, 2.0),
+     (1.0, 3.0),
+    ],
     # 0.5*pi rad
-    [(2.0024963, -0.5687225),
-     (-0.9975037, 0.4312775),
+    [(2.0024963, -0.56872247),
+     (0.0024963, 7.9312775),
+     (3.4024963, -0.56872247),
      (0.0024963, -2.5687225),
-     (3.4024963, -0.5687225),
-     (0.0024963, 7.9312775)
+     (-0.9975037, 0.43127753),
     ],
     # -1.7*pi rad
     [(1.1099208, -0.7445685),
-     (-0.7293449, 1.8278043),
-     (-1.6836837, -1.1870320),
+     (4.4880615, 7.3076465),
      (2.2425446, -1.5674679),
-     (4.4880615, 7.3076465)
+     (-1.6836837, -1.1870320),
+     (-0.7293449, 1.8278043),
     ],
     # 3.5*pi rad
     [(0.5687, 2.0025),
-     (3.5687, 1.0025),
-     (2.5687, 4.0025),
+     (2.5687, -6.4975),
      (-0.8313, 2.0025),
-     (2.5687, -6.4975)
+     (2.5687, 4.0025),
+     (3.5687, 1.0025),
     ],
 ]
 # ------------------------------------------------------------
@@ -134,7 +139,7 @@ points3 = [
     (3.5, -6.0),
     (2, -12),
     (-1.8, -5),
-    (-6.0, -5)
+    (-6.0, -5),
 ]
 # vertices
 V3 = [
@@ -143,14 +148,14 @@ V3 = [
     (3.5, -6.0),
     (2.0, -12.0),
     (-1.8, -5.0),
-    (-6.0, -5.0)
+    (-6.0, -5.0),
 ]
 # area
 A3 = 56.3
 # signed area, used for centroid calculation
-SA3 = 0
+SA3 = -56.3
 # centroid
-C3 = (0.777146, -4.343399)
+C3 = (0.7771462, -4.343398)
 # rotated about the angles in ROTATE_ANGLES
 P3_ROTATED = [
     # 0 rad
@@ -159,7 +164,7 @@ P3_ROTATED = [
      (3.5, -6.0),
      (2.0, -12.0),
      (-1.8, -5.0),
-     (-6.0, -5.0)
+     (-6.0, -5.0),
     ],
     # 0.5*pi rad
     [(-3.5662523, -5.1205447),
@@ -183,7 +188,7 @@ P3_ROTATED = [
      (-11.1205, 0.0663),
      (-17.1205, 1.5663),
      (-10.1205, 5.3663),
-     (-10.1205, 9.5663)
+     (-10.1205, 9.5663),
     ],
 ]
 
@@ -269,10 +274,6 @@ class PolygonTestCase(unittest.TestCase):
                 self.polygon1.rotate(angle)
                 self.polygon2.rotate(angle)
                 self.polygon3.rotate(angle)
-                print(angle)
-                print(-angle)
-                print(self.polygon1.vertices)
-                print(P1_ROTATED[i])
                 self.assertEqual(self.polygon1.vertices,
                                  P1_ROTATED[i])
                 self.assertEqual(self.polygon2.vertices,
@@ -285,7 +286,6 @@ class PolygonTestCase(unittest.TestCase):
             self.assertEqual(self.polygon1.vertices, V1)
             self.assertEqual(self.polygon2.vertices, V2)
             self.assertEqual(self.polygon3.vertices, V3)
-            print(self.polygon1.vertices)
 
 class RoomTestCase(unittest.TestCase):
     pass

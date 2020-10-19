@@ -6,7 +6,9 @@ Includes:
     - Room: Inherits Polygon and contains instances of Furniture
     - Furniture: Inherits Polygon and interacts with Room
 '''
-# TODO: implement decimal library
+# TODO:
+# - Fix Decimal implementation by using local context during
+# calcuations (e.g. with decimal.getcontext() = 9)
 
 ############################
 # imports
@@ -17,10 +19,10 @@ from math import sin, cos
 
 # 3rd party
 import numpy as np
-from decimal import Decimal, getcontext
+from decimal import Decimal, getcontext, localcontext
 
 # local imports
-from .config import *
+from spacious.config import *
 
 class Polygon(object):
     '''
@@ -30,7 +32,7 @@ class Polygon(object):
 
     version = '0.1'
     # the precision of floats, provided by Decimal
-    getcontext().prec = 7
+    getcontext().prec = 5
 
     def __init__(self, points):
         '''
@@ -59,7 +61,7 @@ class Polygon(object):
             self.vertices, signed_area)
 
     def __str__(self):
-        text = "Polygon with vertices:"
+        text = "polygon with vertices:"
         for point in self.vertices:
             text += "\n{}".format(point)
         return text
@@ -69,7 +71,7 @@ class Polygon(object):
         Rotate the polygon about the centroid by given angle in
         radians using RH rule.
         '''
-        logger.debug('')
+        logger.debug(self)
         rotated_vertices = []
         for vertex in self.vertices:
             rotated_vertices.append(
@@ -87,16 +89,21 @@ class Polygon(object):
             vertices, signed))
         area = Decimal()
         num_vertices = len(vertices)
-        for i in range(num_vertices):
-            # wrap around to first point at end of list
-            j = (i + 1) % num_vertices
-            x_0 = Decimal(str(vertices[i][0]))
-            y_0 = Decimal(str(vertices[i][1]))
-            x_1 = Decimal(str(vertices[j][0]))
-            y_1 = Decimal(str(vertices[j][1]))
-            area += x_0 * y_1
-            area -= x_1 * y_0
-        area /= 2
+        with localcontext() as ctx:
+            # high-precision calculation
+            ctx.prec = 16
+            for i in range(num_vertices):
+                # wrap around to first point at end of list
+                j = (i + 1) % num_vertices
+                x_0 = Decimal(str(vertices[i][0]))
+                y_0 = Decimal(str(vertices[i][1]))
+                x_1 = Decimal(str(vertices[j][0]))
+                y_1 = Decimal(str(vertices[j][1]))
+                area += x_0 * y_1
+                area -= x_1 * y_0
+            area /= 2
+        # round to the global precision
+        area = +area
         logger.debug('area: {}'.format(area))
         if signed:
             return float(area)
@@ -115,26 +122,31 @@ class Polygon(object):
         c_x = Decimal()
         c_y = Decimal()
         num_vertices = len(vertices)
-        for i in range(num_vertices):
-            # wrap around to first point at end of list
-            j = (i + 1) % num_vertices
-            x_0 = Decimal(str(vertices[i][0]))
-            y_0 = Decimal(str(vertices[i][1]))
-            x_1 = Decimal(str(vertices[j][0]))
-            y_1 = Decimal(str(vertices[j][1]))
-            # get the X coordinate
-            c_x += (x_0 ** 2) * y_1
-            c_x -= x_0 * x_1 * y_0
-            c_x += x_0 * x_1 * y_1
-            c_x -= (x_1 ** 2) * y_0
-            # get the Y coordinate
-            c_y += x_0 * y_0 * y_1
-            c_y -= x_1 * (y_0 ** 2)
-            c_y += x_0 * (y_1 ** 2)
-            c_y -= x_1 * y_0 * y_1
-        logger.debug('c_x, c_y before div: {}'.format((c_x, c_y)))
-        c_x /= 6 * Decimal(str(s_area))
-        c_y /= 6 * Decimal(str(s_area))
+        with localcontext() as ctx:
+            # high-precision calculation
+            ctx.prec = 16
+            for i in range(num_vertices):
+                # wrap around to first point at end of list
+                j = (i + 1) % num_vertices
+                x_0 = Decimal(str(vertices[i][0]))
+                y_0 = Decimal(str(vertices[i][1]))
+                x_1 = Decimal(str(vertices[j][0]))
+                y_1 = Decimal(str(vertices[j][1]))
+                # get the X coordinate
+                c_x += (x_0 ** 2) * y_1
+                c_x -= x_0 * x_1 * y_0
+                c_x += x_0 * x_1 * y_1
+                c_x -= (x_1 ** 2) * y_0
+                # get the Y coordinate
+                c_y += x_0 * y_0 * y_1
+                c_y -= x_1 * (y_0 ** 2)
+                c_y += x_0 * (y_1 ** 2)
+                c_y -= x_1 * y_0 * y_1
+            logger.debug('c_x, c_y before div: {}'.format((c_x, c_y)))
+            c_x /= 6 * Decimal(str(s_area))
+            c_y /= 6 * Decimal(str(s_area))
+        c_x = +c_x
+        c_y = +c_y
         logger.debug('c_x, c_y after div: {}'.format((c_x, c_y)))
         return float(c_x), float(c_y)
 
@@ -155,7 +167,7 @@ class Polygon(object):
         # the point relative to the origin
         x = Decimal(str(point[0])) - o_x
         y = Decimal(str(point[1])) - o_y
-        logger.debug('translate vector to origin: {}'.format((x, y)))
+        #logger.debug('translate vector to origin: {}'.format((x, y)))
         # multiply by the rotation matrix,
         # then add the offset back in
         new_x = (x * cos_ang - y * sin_ang) + o_x
