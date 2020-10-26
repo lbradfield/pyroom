@@ -24,6 +24,9 @@ from decimal import Decimal, getcontext, localcontext
 # local imports
 from spacious.config import *
 
+GLOB_PREC = 8
+CALC_PREC = 20
+
 class Polygon(object):
     '''
     Base class for room and furniture objects that provides
@@ -32,7 +35,9 @@ class Polygon(object):
 
     version = '0.1'
     # the precision of floats, provided by Decimal
-    getcontext().prec = 5
+    getcontext().prec = GLOB_PREC
+    # places to round to
+    q = Decimal(10) ** -GLOB_PREC
 
     def __init__(self, points):
         '''
@@ -51,8 +56,9 @@ class Polygon(object):
                      '{}'.format(points))
         self.vertices = [(0.0, 0.0)]
         for v_x, v_y in points:
-            self.vertices.append(
-                (float(v_x), float(v_y)))
+            rv_x = Decimal(str(v_x)).quantize(Polygon.q)
+            rv_y = Decimal(str(v_y)).quantize(Polygon.q)
+            self.vertices.append((rv_x, rv_y))
         self.num_vertices = len(self.vertices)
 
         self.area = self.calc_area(self.vertices)
@@ -91,7 +97,7 @@ class Polygon(object):
         num_vertices = len(vertices)
         with localcontext() as ctx:
             # high-precision calculation
-            ctx.prec = 16
+            ctx.prec = CALC_PREC
             for i in range(num_vertices):
                 # wrap around to first point at end of list
                 j = (i + 1) % num_vertices
@@ -104,7 +110,9 @@ class Polygon(object):
             area /= 2
         # round to the global precision
         area = +area
-        logger.debug('area: {}'.format(area))
+        logger.debug('raw area: {}'.format(area))
+        # round to global decimal places
+        area = area.quantize(Polygon.q)
         if signed:
             return float(area)
         else:
@@ -124,7 +132,7 @@ class Polygon(object):
         num_vertices = len(vertices)
         with localcontext() as ctx:
             # high-precision calculation
-            ctx.prec = 16
+            ctx.prec = CALC_PREC
             for i in range(num_vertices):
                 # wrap around to first point at end of list
                 j = (i + 1) % num_vertices
@@ -145,6 +153,7 @@ class Polygon(object):
             logger.debug('c_x, c_y before div: {}'.format((c_x, c_y)))
             c_x /= 6 * Decimal(str(s_area))
             c_y /= 6 * Decimal(str(s_area))
+        # round to the global precision
         c_x = +c_x
         c_y = +c_y
         logger.debug('c_x, c_y after div: {}'.format((c_x, c_y)))
@@ -164,16 +173,22 @@ class Polygon(object):
         cos_ang = Decimal(str(cos(angle)))
         o_x = Decimal(str(origin[0]))
         o_y = Decimal(str(origin[1]))
-        # the point relative to the origin
-        x = Decimal(str(point[0])) - o_x
-        y = Decimal(str(point[1])) - o_y
-        #logger.debug('translate vector to origin: {}'.format((x, y)))
-        # multiply by the rotation matrix,
-        # then add the offset back in
-        new_x = (x * cos_ang - y * sin_ang) + o_x
-        new_y = (x * sin_ang + y * cos_ang) + o_y
-        logger.debug('rotated point: {}'.format(
-            (new_x, new_y)))
+        with localcontext() as ctx:
+            # high-precision calculation
+            ctx.prec = CALC_PREC
+            # the point relative to the origin
+            x = Decimal(str(point[0])) - o_x
+            y = Decimal(str(point[1])) - o_y
+            #logger.debug('translate vector to origin: {}'.format((x, y)))
+            # multiply by the rotation matrix,
+            # then add the offset back in
+            new_x = (x * cos_ang - y * sin_ang) + o_x
+            new_y = (x * sin_ang + y * cos_ang) + o_y
+            logger.debug('rotated point: {}'.format(
+                (new_x, new_y)))
+        # round to the global precision
+        new_x = +new_x
+        new_y = +new_y
         return float(new_x), float(new_y)
 
     # unused functions below
