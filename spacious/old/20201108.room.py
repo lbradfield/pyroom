@@ -7,17 +7,19 @@ Includes:
     - Furniture: Inherits Polygon and interacts with Room
 '''
 # TODO:
-    # - implement mpmath library to do calculations
+# - Fix Decimal implementation by using local context during
+# calcuations
 
 ############################
 # imports
 ############################
 # standard imports
 import sys
+from math import sin, cos
 
 # 3rd party
 import numpy as np
-import mpmath
+from decimal import Decimal, getcontext, localcontext
 
 # local imports
 from spacious.config import *
@@ -32,6 +34,8 @@ class Polygon(object):
     '''
 
     version = '0.1'
+    # places to round to
+    q = Decimal(10) ** -ROUND_PLACES
 
     def __init__(self, points):
         '''
