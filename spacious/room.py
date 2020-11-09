@@ -8,7 +8,7 @@ Includes:
 '''
 # TODO:
 # - Fix Decimal implementation by using local context during
-# calcuations (e.g. with decimal.getcontext() = 9)
+# calcuations
 
 ############################
 # imports
@@ -24,8 +24,8 @@ from decimal import Decimal, getcontext, localcontext
 # local imports
 from spacious.config import *
 
-GLOB_PREC = 8
-CALC_PREC = 20
+ROUND_PLACES = 8
+CALC_PREC = 40
 
 class Polygon(object):
     '''
@@ -34,10 +34,8 @@ class Polygon(object):
     '''
 
     version = '0.1'
-    # the precision of floats, provided by Decimal
-    getcontext().prec = GLOB_PREC
     # places to round to
-    q = Decimal(10) ** -GLOB_PREC
+    q = Decimal(10) ** -ROUND_PLACES
 
     def __init__(self, points):
         '''
@@ -56,8 +54,10 @@ class Polygon(object):
                      '{}'.format(points))
         self.vertices = [(0.0, 0.0)]
         for v_x, v_y in points:
-            rv_x = Decimal(str(v_x)).quantize(Polygon.q)
-            rv_y = Decimal(str(v_y)).quantize(Polygon.q)
+            # rv_x = Decimal(str(v_x)).quantize(Polygon.q)
+            # rv_y = Decimal(str(v_y)).quantize(Polygon.q)
+            rv_x = Decimal(str(v_x))
+            rv_y = Decimal(str(v_y))
             self.vertices.append((rv_x, rv_y))
         self.num_vertices = len(self.vertices)
 
@@ -108,11 +108,11 @@ class Polygon(object):
                 area += x_0 * y_1
                 area -= x_1 * y_0
             area /= 2
-        # round to the global precision
+        # setto the global precision
         area = +area
         logger.debug('raw area: {}'.format(area))
         # round to global decimal places
-        area = area.quantize(Polygon.q)
+        #area = area.quantize(Polygon.q)
         if signed:
             return float(area)
         else:
