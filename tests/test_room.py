@@ -1,10 +1,4 @@
 #/usr/bin/env python3
-print('''
-        __file__ = {}
-        __name__ = {}
-        __package__ = {}
-        '''.format(__file__, __name__, __package__))
-
 '''
 reference on floating-point errors:
 https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/#:~:text=The%20idea%20of%20a%20relative,larger%20of%20the%20two%20numbers.
@@ -27,7 +21,6 @@ import unittest
 import math
 
 # this package
-import spacious
 from spacious.room import Polygon
 
 # rotate angles in radians
@@ -39,7 +32,6 @@ ROTATE_ANGLES = [
 ]
 # ------------------------------------------------------------
 # simple test case
-# 2x3 rectangle
 points1 = [
     (2.0, 0),
     (2, 3),
@@ -241,11 +233,11 @@ class PolygonTestCase(unittest.TestCase):
 
     def test_area_signed(self):
         self.assertEqual(self.polygon1.calc_area(
-            self.polygon1.vertices, True), SA1)
+            self.polygon1.vertices), (A1, SA1))
         self.assertEqual(self.polygon2.calc_area(
-            self.polygon2.vertices, True), SA2)
+            self.polygon2.vertices), (A2, SA2))
         self.assertEqual(self.polygon3.calc_area(
-            self.polygon3.vertices, True), SA3)
+            self.polygon3.vertices), (A3, SA3))
 
     def test_centroid(self):
         self.assertEqual(self.polygon1.centroid, C1)
