@@ -1,0 +1,8 @@
+# test case for interactive
+points = [(58.532, -16.0048398002794777), (-3, 0.0000), (-2.47839958618471111111, 23), (1, 1)]
+p1 = Polygon(points)
+print(p1)
+p1.vertices
+p1.area
+p1.centroid
+p1.rotate
