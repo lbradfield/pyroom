@@ -9,3 +9,4 @@ tests/*.pyc
 spacious/*.swp
 tests/*.swp
 spacioussite/settings.py
+db.sqlite3
