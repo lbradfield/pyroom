@@ -1,4 +1,4 @@
-#/usr/bin/env python3
+# /usr/bin/env python3
 
 # standard imports
 import numpy as np
@@ -20,8 +20,8 @@ for i in range(n_iter):
     rotated_1 = room.rotate(point, angle, origin)
     tot_time += time.time() - start_time
 avg_time_1 = tot_time / n_iter
-print('new point 1 = {}'.format(rotated_1))
-print('rotate without numpy avg runtime\n = {} s'.format(avg_time_1))
+print("new point 1 = {}".format(rotated_1))
+print("rotate without numpy avg runtime\n = {} s".format(avg_time_1))
 
 # TODO: Need to rewrite numpy rotation function
 tot_time = 0.0
@@ -30,5 +30,5 @@ for i in range(n_iter):
     rotated_2 = room.rotate_np(point, angle, origin)
     tot_time += time.time() - start_time
 avg_time_2 = tot_time / n_iter
-print('new point 1 = {}'.format(rotated_2))
-print('rotate with numpy avg runtime\n = {} s'.format(avg_time_2))
+print("new point 1 = {}".format(rotated_2))
+print("rotate with numpy avg runtime\n = {} s".format(avg_time_2))
