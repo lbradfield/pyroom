@@ -21,9 +21,7 @@ import views
 urlpatterns = [
     path("polls/", include("polls.urls")),
     path("admin/", admin.site.urls),
-    path("", views.index, name="home"),
-    path("about", views.about, name="about"),
-    path("contact", views.contact, name="contact"),
+    path("", include('apps.public.urls')),
     path("accounts/profile", views.ProfileView.as_view(), name="profile"),
     # Django auth stuff
     path(
