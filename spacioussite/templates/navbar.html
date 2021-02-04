@@ -2,27 +2,9 @@
 <!DOCTYPE html>
 
 <div>
-    <span style="float:right">
-        {% if user.is_authenticated %}
-            {% url 'profile' as profile_url %}
-            <span>
-                Hi
-                {% if request.path == profile_url %}
-                    {{ user.username }}!
-                {% else %}
-                    <a href="{{ profile_url }}">{{ user.username }}</a>!
-                {% endif %}
-            </span>
-            <span><a href="{% url 'logout' %}">Logout</a></span>
-        {% else %}
-            <span><a href="{% url 'login' %}">Login</a></span>
-        {% endif %}
-    </span>
-</div>
-<div>
-    {% url 'home' as home_url %}
-    {% url 'about' as about_url %}
-    {% url 'contact' as contact_url %}
+    {% url 'public:home' as home_url %}
+    {% url 'public:about' as about_url %}
+    {% url 'public:contact' as contact_url %}
     <span>
         {% if request.path == home_url %}
             Home
@@ -42,6 +24,24 @@
             Contact
         {% else %}
             <a href="{{ contact_url }}">Contact</a>
+        {% endif %}
+    </span>
+</div>
+<div>
+    <span style="float:right">
+        {% if user.is_authenticated %}
+            {% url 'profile' as profile_url %}
+            <span>
+                Hi
+                {% if request.path == profile_url %}
+                    {{ user.username }}!
+                {% else %}
+                    <a href="{{ profile_url }}">{{ user.username }}</a>!
+                {% endif %}
+            </span>
+            <span><a href="{% url 'logout' %}">Logout</a></span>
+        {% else %}
+            <span><a href="{% url 'login' %}">Login</a></span>
         {% endif %}
     </span>
 </div>
